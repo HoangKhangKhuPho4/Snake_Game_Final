@@ -1,138 +1,149 @@
-// === TRẠNG THÁI GAME ===
+//TRẠNG THÁI GAME
 let snake = [{x : 5 , y : 10}];
-let food = {x : 15, y: 10};
+let food = {x : 15, y: 10}; // food là 1 Object (đối tượng)
 let obstacles = [
     {x: 10, y: 8}, {x: 10, y: 9}, {x: 10, y: 10}, {x: 10, y: 11}, {x: 10, y: 12}
 ];
-let $boardBody = $('#game-board-body'); // Lấy <tbody>
-let direction  = 'right';
-let gameLoopInterval;
-const BOARD_SIZE = 20;
 
-// === HÀM TẠO BẢNG (TABLE) ===
-/**
- * Hàm này tạo ra một lưới 20x20 <tr> và <td>.
- * Không cần gán ID hay Class cho từng ô.
- */
-function createBoard() {
+let $boardBody = $('#game-board-body');
+let direction = "right";
+let gameLoopInterval;
+const boardSize = 20;
+
+
+function createBoard(){
     $boardBody.empty();
-    for (let y = 1; y <= BOARD_SIZE; y++) {
+    for (let y = 1; y <= boardSize; y++) {
         let $row = $('<tr></tr>');
-        for (let x = 1; x <= BOARD_SIZE; x++) {
-            $row.append($('<td></td>')); // Tạo ô rỗng
+        // SỬA LỖI 1: Phải là x <= boardSize
+        for (let x = 1; x <= boardSize ; x++) {
+            $row.append($('<td></td>'));
         }
         $boardBody.append($row);
     }
-}
+} // Hàm createBoard kết thúc ở đây
 
-// === HÀM VẼ (DRAW) DÙNG nth-child ===
-/**
- * Hàm này sẽ tìm ô <td> bằng cách đếm (hàng thứ y, ô thứ x)
- * và thêm CLASS (snake, food, obstacle) vào đó.
- */
 function drawGame(){
-    // Bước 1: Xóa class khỏi tất cả các ô <td>
     $('#game-board td').removeClass('snake food obstacle');
 
-    // Hàm hỗ trợ để chọn ô <td> bằng tọa độ
-    function getCell(x, y) {
-        // :nth-child(y) -> Chọn hàng <tr> thứ y
-        // td:nth-child(x) -> Chọn ô <td> thứ x trong hàng đó
+    // SỬA LỖI 2: Dùng backticks (`) và 'td:nth-child'
+    function getCell(x,y){
         return $(`#game-board-body tr:nth-child(${y}) td:nth-child(${x})`);
     }
 
-    // Bước 2: Vẽ rắn
-    snake.forEach(function (segment) {
-        getCell(segment.x, segment.y).addClass('snake');
+    snake.forEach(function (segment){
+        getCell(segment.x , segment.y).addClass('snake');
     });
 
-    // Bước 3: Vẽ tường
-    obstacles.forEach(function (obstacle) {
-        getCell(obstacle.x, obstacle.y).addClass('obstacle');
+    // SỬA LỖI 3: Thêm tham số (obstacle) và dùng nó
+    obstacles.forEach(function (obstacle){
+        getCell(obstacle.x , obstacle.y).addClass('obstacle');
     });
 
-    // Bước 4: Vẽ mồi
-    getCell(food.x, food.y).addClass('food');
+    getCell(food.x , food.y).addClass('food');
 }
 
-// === HÀM RESET GAME ===
 function resetGame(){
-    alert("Game Over!");
-    snake =[{x : 5, y: 10}];
-    food = {x : 15, y : 10};
+    alert("Game Over");
+    // SỬA LỖI 4: Xóa 'let' và reset về trạng thái ban đầu
+    snake = [{x : 5 , y : 10}];
+    food = {x : 15, y: 10};
+    // obstacles không cần reset vì nó không đổi
     direction = "right";
 
     clearInterval(gameLoopInterval);
-    gameLoopInterval = setInterval(mainLoop, 200); // Giữ tốc độ 200ms
+    gameLoopInterval = setInterval(mainLoop, 200);
 }
 
-// === LOGIC ĐIỀU KHIỂN (INPUT) ===
+//LOGIC ĐIỀU KHIỂN
 const keyToDirection = {
-    'ArrowUp': 'up', 'ArrowDown': 'down', 'ArrowLeft': 'left', 'ArrowRight': 'right'
-};
-const opposites = {
-    'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'
+    'ArrowUp':'up',
+    'ArrowDown':'down',
+    'ArrowLeft':'left',
+    'ArrowRight':'right', // SỬA LỖI 5: Phải là 'ArrowRight'
 };
 
-$(document).on('keydown', function(e){
+const opposites = {
+    'up':'down',
+    'down':'up',
+    'left':'right',
+    'right':'left',
+};
+
+$(document).on('keydown', function (e){
     let newDirection = keyToDirection[e.key];
 
-    // Chặn quay đầu 180 độ
-    if (newDirection && newDirection !== opposites[direction]) {
+    // Dùng !== (an toàn hơn)
+    if (newDirection && newDirection !== opposites[direction]){
         direction = newDirection;
     }
 });
 
-// === LOGIC CẬP NHẬT TRẠNG THÁI (UPDATE) ===
-// (Logic này không thay đổi, nó độc lập với cách vẽ)
 function updateGame(){
     let oldHead = snake[0];
-    let newHead = {x : oldHead.x , y: oldHead.y};
+    let newHead = {x:oldHead.x, y:oldHead.y};
 
-    if (direction === 'right') newHead.x++;
-    else if (direction === 'left') newHead.x--;
-    else if (direction === 'down') newHead.y++;
-    else if (direction == 'up') newHead.y--;
+    //Xử Lý Di chuyển
+    // SỬA LỖI 6: Dùng === (so sánh)
+    if (direction === "right") newHead.x++;
+    else if (direction === "left") newHead.x--;
+    else if (direction === "down") newHead.y++;
+    // SỬA LỖI 7: 'up' là y--
+    else if (direction === "up") newHead.y--;
 
-    // Xử lý xuyên tường
-    if (newHead.x > BOARD_SIZE) newHead.x = 1;
-    else if (newHead.x < 1) newHead.x = BOARD_SIZE;
-    else if (newHead.y > BOARD_SIZE) newHead.y = 1;
-    else if (newHead.y < 1) newHead.y = BOARD_SIZE;
+    //Xử Lý Xuyên Tường
+    if (newHead.x > boardSize) newHead.x = 1;
+    else  if (newHead.x < 1) newHead.x = boardSize;
+    else  if (newHead.y >  boardSize) newHead.y = 1;
+    else  if (newHead.y < 1) newHead.y = boardSize;
 
-    // Hàm kiểm tra va chạm
-    function isColliding(point, arr) {
+    //hàm kiểm tra va chạm
+    function isColliding(point, arr){
+        // arr.some sẽ lặp qua mảng và trả về true nếu BẤT KỲ segment nào thỏa mãn
         return arr.some(segment => segment.x === point.x && segment.y === point.y);
     }
 
-    // Kiểm tra thua game
-    if (isColliding(newHead, snake) || isColliding(newHead, obstacles)) {
+    //hàm kiểm tra thua game
+    if (isColliding(newHead, snake) || isColliding(newHead, obstacles)){
         resetGame();
         return;
     }
 
-    // Thêm đầu mới
+    //thêm đầu mới
     snake.unshift(newHead);
 
-    // Xử lý ăn mồi
-    if (isColliding(newHead, [food])) {
-        // Ăn mồi -> tạo mồi mới
-        food.x = Math.floor(Math.random()* BOARD_SIZE)+1;
-        food.y = Math.floor(Math.random()* BOARD_SIZE)+1;
+    //xử lý ăn mồi
+    // (food là object, nên [food] để biến nó thành mảng 1 phần tử là đúng)
+    if (isColliding(newHead, [food])){
+
+        // SỬA LỖI 8: Thêm lại logic tạo mồi an toàn
+        let validPosition = false;
+        while(!validPosition) {
+            // 1. Tạo vị trí thử
+            let newFoodX = Math.floor(Math.random()*boardSize)+1;
+            let newFoodY = Math.floor(Math.random()*boardSize)+1;
+            let newFoodPos = { x: newFoodX, y: newFoodY }; // Dùng 1 đối tượng tạm
+
+            // 2. Kiểm tra
+            // Kiểm tra xem vị trí tạm có đụng rắn HOẶC đụng tường không
+            if (!isColliding(newFoodPos, snake) && !isColliding(newFoodPos, obstacles)) {
+                // 3. Nếu an toàn, gán vào 'food' và thoát vòng lặp
+                validPosition = true;
+                food.x = newFoodX;
+                food.y = newFoodY;
+            }
+            // (Nếu không an toàn, vòng lặp 'while' sẽ tự động thử lại)
+        }
     } else {
-        // Không ăn mồi -> xóa đuôi
         snake.pop();
     }
 }
 
-// === VÒNG LẶP GAME CHÍNH ===
 function mainLoop(){
     updateGame();
     drawGame();
 }
 
-// === KHỞI ĐỘNG GAME ===
-// 1. Phải tạo bảng <table> trước
+//KHỞI ĐỘNG GAME
 createBoard();
-// 2. Bắt đầu vòng lặp game
 gameLoopInterval = setInterval(mainLoop, 200);
