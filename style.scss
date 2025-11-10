@@ -1,38 +1,29 @@
-body{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  min-height: 100vh;
-  margin: 0;
-  background-color: #f0f0f0;
-}
-
-/* Tạo kiểu cho Bảng */
 #game-board {
-  border-collapse: collapse; /* Gộp viền các ô lại */
-  border: 3px solid #333;
-  background-color: #fdfdfd;
+   border-collapse: collapse;
+   background-color: white;
 }
 
-/* Tạo kiểu cho mỗi Ô (Cell) */
+body {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column;
+}
+
 #game-board td {
-  width: 20px;
+  padding: 0;
   height: 20px;
-  box-sizing: border-box;
-  border: 1px solid #ccc; /* Viền lưới mờ */
+  width: 20px;
+  border: 1px solid green;
 }
 
-/* Các class này sẽ thay đổi MÀU NỀN của <td> */
 .snake {
-  background-color: #333333;
+   background-color: black;
+}
+.obstacles {
+    background-color: gray;
 }
 
-.food {
-  background-color: red;
-  border-radius: 50%;
-}
-
-.obstacle {
-  background-color: #5A5A5A;
+.food{
+   background-color: red;
 }
